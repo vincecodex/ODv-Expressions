@@ -1,3 +1,3 @@
 ODv-ExpLib Timbre Version 1
 
-
+The expression tree will use a struct type for nodes, ENode.  The node will contain as its first field an integral type and a pointer to its data as its second field.  There will be 2 types: operators and literals.  
