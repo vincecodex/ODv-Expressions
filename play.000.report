@@ -2,6 +2,6 @@ ODv-ExpLib Timbre
   Play 000: Parser
 
 Introduction
-  The purpose of this playground is to test all the language features of the parser.  The first step is to create a parser that will operate on numbers and correctly output the value of expressions.  The next step is to create a tree during parsing that can be evaluated at will. The third step is to add support for variables and the final step is to allow for variable assignment.  
+  The purpose of this playground is to test all the language features of the parser.  The first step is to create a parser that will operate on numbers and correctly output the value of expressions.  The next step is to create a tree during parsing that can be evaluated at will.  The third step is to add support for variables and the final step is to allow for variable assignment.  
 
 
