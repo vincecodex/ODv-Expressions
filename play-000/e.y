@@ -8,6 +8,7 @@
   void yyerror(char *);
   long double lg(long double num);
   FILE *yyin, *yyout;
+  struct expression *output;
 %}
 
 %union {
@@ -16,11 +17,12 @@
   char *sValue;
   struct uval uValue;
   struct bval bValue;
+  struct expression eValue;
 };
 
-%token <sValue> IDENTIFIER
-%token <iValue> INTEGER_LITERAL
-%token <fValue> FLOAT_LITERAL
+%token <eValue> IDENTIFIER
+%token <eValue> INTEGER_LITERAL
+%token <eValue> FLOAT_LITERAL
 %token <sValue> OP_PL
 %token <sValue> OP_MI
 %token <sValue> OP_MU
@@ -42,30 +44,27 @@
 %left OP_MU OP_DI
 %left OP_EX
 
-%type <fValue> expression
+%type <eValue> expression
 
 %%
 
 program:
-    expression  { printf("expression output %Lf\n",$1); }
-    | program NEW_LINES expression  { printf("expression output %Lf\n",$3); }
+    expression  { output = $1; printf("expression parsed\n",$1); }
     ;
 
 expression:
     INTEGER_LITERAL  { $$ = $1; printf("found integer: %Ld\n",$1); }
     | FLOAT_LITERAL  { $$ = $1; printf("found integer: %Lf\n",$1); }
-    | expression OP_PL expression  { $$ = $1 + $3; printf("found additive expression: %Lf + %Lf\n",$1,$3); }
-    | expression OP_MI expression  { $$ = $1 - $3; printf("found subtractive expression: %Lf - %Lf\n",$1,$3); }
-    | expression OP_MU expression  { $$ = $1 * $3; printf("found multiplicative expression: %Lf * %Lf\n",$1,$3); }
-    | expression OP_DI expression  { $$ = $1 / $3; printf("found divisive expression: %Lf / %Lf\n",$1,$3); }
-    | OP_MI expression  %prec OP_MU  { $$ = -$2; printf("found negative expression: -%Lf\n",$2); }
-    | expression OP_EX expression  { $$ = powl( $1, $3 ); printf("found exponentiation expression: %Lf ^ %Lf\n",$1,$3); }
-    | BR_OP expression BR_CP  { $$ = $2; printf("found parenthesized expression: %Lf\n",$2); }
-    | BR_AB expression BR_AB  { $$ = fabsl($2); printf("found abs expression: %Lf\n",$2); }
-    | BR_OC expression BR_CC  { $$ = ceil($2); printf("found ceil expression: %Lf\n",$2); }
-    | BR_OF expression BR_CF  { $$ = floor($2); printf("found floor expression: %Lf\n",$2); }
-    | UNARY_FUNCTION BR_OP expression BR_CP  { $$ = $1.ptr($3); printf("found unary function expression: %s(%Lf)\n",$1.nom,$3); }
-    | BINARY_FUNCTION BR_OP expression SP_CM expression BR_CP  { $$ = $1.ptr($3,$5); printf("found binary function expression: %s(%Lf,%Lf)\n",$1.nom,$3,$5); }
+    | expression OP_PL expression  { $$ = boperatorc(BIN_OP_ADDITION,$1,$3); printf("found additive expression\n"); }
+    | expression OP_MI expression  { $$ = boperatorc(BIN_OP_SUBTRACTION,$1,$3); printf("found subtractive expression\n"); }
+    | expression OP_MU expression  { $$ = boperatorc(BIN_OP_MULTIPLICATION,$1,$3); printf("found multiplicative expression\n"); }
+    | expression OP_DI expression  { $$ = boperatorc(BIN_OP_DIVISION,$1,$3); printf("found divisive expression\n"); }
+    | OP_MI expression  %prec OP_MU  { $$ = uoperatorc(UN_OP_NEGATION,$2); printf("found negative expression\n"); }
+    | expression OP_EX expression  { $$ = boperatorc(BIN_OP_EXPONENTIATION,$1,$3); printf("found exponentiation expression\n"); }
+    | BR_OP expression BR_CP  { $$ = $2; printf("found parenthesized expression\n"); }
+    | BR_AB expression BR_AB  { $$ = uoperatorc(UN_OP_ABSOLUTE,$2); printf("found abs expression\n"); }
+    | BR_OC expression BR_CC  { $$ = uoperatorc(UN_OP_CEILING,$2); printf("found ceil expression\n"); }
+    | BR_OF expression BR_CF  { $$ = uoperatorc(UN_OP_FLOOR,$2); printf("found floor expression\n"); }
     ;
 
 %%
@@ -76,7 +75,7 @@ void yyerror(char *s) {
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 
-int parse(char *str) {
+struct expression *parse(char *str) {
   FILE *stream;
   int fd[2];
   int l, n;
@@ -86,7 +85,7 @@ int parse(char *str) {
   
   if( pipe(fd) ) {
     printf("pipe() failed\n");
-    return 1;
+    return 0;
   }
   else {
     yyin = fdopen(fd[0], "r");
@@ -107,6 +106,9 @@ int parse(char *str) {
 }
 
 int main(int argc, char *argv[]) {
+  struct expression *e;
   printf("main calls parse on \"%s\"\n",argv[1]);
-  return parse(argv[1]);
+  e = parse(argv[1]);
+  print_tree(e);
+  return 0;
 }

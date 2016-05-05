@@ -76,11 +76,11 @@ struct node_stack {
 
 #define EXPRESSION_TYPE_LITERAL_LONG_DOUBLE 4
 
-#define EXPRESSION_TYPE_LITERAL_VARIABLE 5
+#define EXPRESSION_TYPE_VARIABLE 5
 
-#define EXPRESSION_TYPE_LITERAL_UNARY_OPERATOR 6
+#define EXPRESSION_TYPE_UNARY_OPERATOR 6
 
-#define EXPRESSION_TYPE_LITERAL_BINARY_OPERATOR 7
+#define EXPRESSION_TYPE_BINARY_OPERATOR 7
 
 extern struct binary_operator_type BIN_OP_ADDITION;
 
@@ -93,5 +93,13 @@ extern struct binary_operator_type BIN_OP_DIVISION;
 extern struct binary_operator_type BIN_OP_EXPONENTIATION;
 
 extern struct unary_operator_type UN_OP_NEGATION;
+
+extern struct unary_operator_type UN_OP_ABSOLUTE;
+
+extern struct unary_operator_type UN_OP_CEILING;
+
+extern struct unary_operator_type UN_OP_FLOOR;
+
+void print_tree(struct expression *);
 
 #endif

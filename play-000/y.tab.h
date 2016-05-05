@@ -92,15 +92,16 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 13 "e.y" /* yacc.c:1909  */
+#line 14 "e.y" /* yacc.c:1909  */
 
   long long iValue;
   long double fValue;
   char *sValue;
   struct uval uValue;
   struct bval bValue;
+  struct expression eValue;
 
-#line 104 "y.tab.h" /* yacc.c:1909  */
+#line 105 "y.tab.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

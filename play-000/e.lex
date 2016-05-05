@@ -8,6 +8,12 @@
   void yyerror(char *);
   char *endptr;
   int unary(union YYSTYPE*,int,char *);
+  struct expression iliteral(long long i);
+  struct expression fliteral(long double f);
+  struct expression boperator(struct binary_operator_type *);
+  struct expression uoperator(struct unary_operator_type *);
+  struct expression boperatorc(struct binary_operator_type *,struct expression *,struct expression *);
+  struct expression uoperatorc(struct unary_operator_type *,struct expression *);
 %}
 
 digit [0-9]
@@ -26,41 +32,43 @@ nonnewlinewhitespace [ \t]
       printf("lex skipped whitespace\n");
     }
 \n+  {
+      yylval.sValue = malloc(yyleng+1);
+      strcpy(yylval.sValue,yytext);
       printf("lex found new lines\n");
       return NEW_LINES;
     }
 0  {
-      yylval.iValue = 0;
+      yylval.eValue = iliteral(0);
       printf("lex read 0\n");
       return INTEGER_LITERAL;
     }
 0(b|B){binarydigit}*  {
-      yylval.iValue = strtol(yytext+2,&endptr,2);
+      yylval.eValue = iliteral(strtol(yytext+2,&endptr,2));
       printf("lex read binary integer: %s -> %Ld (%s)\n",yytext,yylval.iValue,endptr);
       return INTEGER_LITERAL;
     }
 0{octaldigit}*  {
-      yylval.iValue = strtol(yytext+1,&endptr,8);
+      yylval.eValue = iliteral(strtol(yytext+1,&endptr,8));
       printf("lex read octal integer: %s -> %Ld (%s)\n",yytext,yylval.iValue,endptr);
       return INTEGER_LITERAL;
     }
 {nonzerodigit}{digit}*  {
-      yylval.iValue = strtol(yytext,&endptr,10);
+      yylval.eValue = iliteral(strtol(yytext,&endptr,10));
       printf("lex read decimal integer: %s -> %Ld (%s)\n",yytext,yylval.iValue,endptr);
       return INTEGER_LITERAL;
     }
 0(x|X){hexidecimaldigit}*  {
-      yylval.iValue = strtol(yytext+2,&endptr,16);
+      yylval.eValue = iliteral(strtol(yytext+2,&endptr,16));
       printf("lex read hexidecimal integer: %s -> %Ld (%s)\n",yytext,yylval.iValue,endptr);
       return INTEGER_LITERAL;
     }
 "."{digit}+  {
-      yylval.fValue = strtod(yytext,&endptr);
+      yylval.eValue = iliteral(strtod(yytext,&endptr));
       printf("lex read fraction: %s -> %Lf (%s)\n",yytext,yylval.fValue,endptr);
       return FLOAT_LITERAL;
     }
 {digit}+"."{digit}*  {
-      yylval.fValue = strtod(yytext,&endptr);
+      yylval.eValue = iliteral(strtod(yytext,&endptr));
       printf("lex read float: %s -> %Lf (%s)\n",yytext,yylval.fValue,endptr);
       return FLOAT_LITERAL;
     }
@@ -160,6 +168,55 @@ int unary(union YYSTYPE *yylval, int yyleng, char *yytext) {
   yylval->uValue.ptr = &sinl;
   printf("lex read sin function name\n");
   return UNARY_FUNCTION;
+}
+
+struct expression iliteral(long long i) {
+  struct expression *literal;
+  long long *l;
+  literal = malloc(sizeof(struct expression));
+  literal->type = EXPRESSION_TYPE_LITERAL_LONG_INTEGER;
+  literal->data = l = malloc(sizeof(long long));
+  *l = i;
+  return literal;
+}
+
+struct expression fliteral(long double f) {
+  struct expression *literal;
+  long double *l;
+  literal = malloc(sizeof(struct expression));
+  literal->type = EXPRESSION_TYPE_LITERAL_LONG_DOUBLE;
+  literal->data = l = malloc(sizeof(long double));
+  *l = f;
+  return literal;
+}
+
+struct expression boperatorc(struct binary_operator_type *b, struct expression *l, struct expression *r) {
+  struct expression operator;
+  struct binary_operator *o;
+  operator.type = EXPRESSION_TYPE_BINARY_OPERATOR;
+  operator.data = o = malloc(sizeof(struct binary_operator));
+  o->type = b;
+  o->left = l;
+  o->right = r;
+  return operator;
+}
+
+struct expression uoperatorc(struct unary_operator_type *u, struct expression *c) {
+  struct expression operator;
+  struct unary_operator *o;
+  operator.type = EXPRESSION_TYPE_UNARY_OPERATOR;
+  operator.data = o = malloc(sizeof(struct unary_operator));
+  o->type = u;
+  o->child = c;
+  return operator;
+}
+
+struct expression boperator(struct binary_operator_type *b) {
+  return boperatorc(b,0,0);
+}
+
+struct expression uoperator(struct unary_operator_type *u) {
+  return uoperatorc(b,0);
 }
 
 int yywrap(void) {
