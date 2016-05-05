@@ -34,6 +34,7 @@
 %token <sValue> BR_OF
 %token <sValue> BR_CF
 %token <sValue> SP_CM
+%token <sValue> NEW_LINES
 %token <uValue> UNARY_FUNCTION
 %token <bValue> BINARY_FUNCTION
 
@@ -46,8 +47,8 @@
 %%
 
 program:
-    expression  { printf("%Lf\n",$1); }
-    | program '\n' expression  { printf("%Lf\n",$3); }
+    expression  { printf("expression output %Lf\n",$1); }
+    | program NEW_LINES expression  { printf("expression output %Lf\n",$3); }
     ;
 
 expression:
@@ -60,6 +61,9 @@ expression:
     | OP_MI expression  %prec OP_MU  { $$ = -$2; printf("found negative expression: -%Lf\n",$2); }
     | expression OP_EX expression  { $$ = powl( $1, $3 ); printf("found exponentiation expression: %Lf ^ %Lf\n",$1,$3); }
     | BR_OP expression BR_CP  { $$ = $2; printf("found parenthesized expression: %Lf\n",$2); }
+    | BR_AB expression BR_AB  { $$ = fabsl($2); printf("found abs expression: %Lf\n",$2); }
+    | BR_OC expression BR_CC  { $$ = ceil($2); printf("found ceil expression: %Lf\n",$2); }
+    | BR_OF expression BR_CF  { $$ = floor($2); printf("found floor expression: %Lf\n",$2); }
     | UNARY_FUNCTION BR_OP expression BR_CP  { $$ = $1.ptr($3); printf("found unary function expression: %s(%Lf)\n",$1.nom,$3); }
     | BINARY_FUNCTION BR_OP expression SP_CM expression BR_CP  { $$ = $1.ptr($3,$5); printf("found binary function expression: %s(%Lf,%Lf)\n",$1.nom,$3,$5); }
     ;

@@ -61,8 +61,9 @@ extern int yydebug;
     BR_OF = 271,
     BR_CF = 272,
     SP_CM = 273,
-    UNARY_FUNCTION = 274,
-    BINARY_FUNCTION = 275
+    NEW_LINES = 274,
+    UNARY_FUNCTION = 275,
+    BINARY_FUNCTION = 276
   };
 #endif
 /* Tokens.  */
@@ -82,8 +83,9 @@ extern int yydebug;
 #define BR_OF 271
 #define BR_CF 272
 #define SP_CM 273
-#define UNARY_FUNCTION 274
-#define BINARY_FUNCTION 275
+#define NEW_LINES 274
+#define UNARY_FUNCTION 275
+#define BINARY_FUNCTION 276
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -98,7 +100,7 @@ union YYSTYPE
   struct uval uValue;
   struct bval bValue;
 
-#line 102 "y.tab.h" /* yacc.c:1909  */
+#line 104 "y.tab.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

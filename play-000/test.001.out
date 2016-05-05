@@ -1,0 +1,78 @@
+main calls parse on "3**2 + 4**2
+|-5|
+|_3.14159_|
+|^3.14159^|
+(3**2 + 4**2)**(1/2)"
+calling parse
+lex read decimal integer: 3 -> 3 ()
+found integer: 3
+lex read exponentiation operator
+lex read decimal integer: 2 -> 2 ()
+found integer: 2
+found exponentiation expression: 3.000000 ^ 2.000000
+lex skipped whitespace
+lex read addition operator: +
+lex skipped whitespace
+lex read decimal integer: 4 -> 4 ()
+found integer: 4
+lex read exponentiation operator
+lex read decimal integer: 2 -> 2 ()
+found integer: 2
+found exponentiation expression: 4.000000 ^ 2.000000
+lex found new lines
+found additive expression: 9.000000 + 16.000000
+expression output 25.000000
+lex read abs symbol
+lex read subtraction operator: -
+lex read decimal integer: 5 -> 5 ()
+found integer: 5
+lex read abs symbol
+found negative expression: -5.000000
+found abs expression: -5.000000
+lex found new lines
+expression output 5.000000
+lex read open floor symbol
+lex read float: 3.14159 -> 3.141590 ()
+found integer: 3.141590
+lex read close floor symbol
+found floor expression: 3.141590
+lex found new lines
+expression output 3.000000
+lex read open ceil symbol
+lex read float: 3.14159 -> 3.141590 ()
+found integer: 3.141590
+lex read close ceil symbol
+found ceil expression: 3.141590
+lex found new lines
+expression output 4.000000
+lex read open parenthesis
+lex read decimal integer: 3 -> 3 ()
+found integer: 3
+lex read exponentiation operator
+lex read decimal integer: 2 -> 2 ()
+found integer: 2
+found exponentiation expression: 3.000000 ^ 2.000000
+lex skipped whitespace
+lex read addition operator: +
+lex skipped whitespace
+lex read decimal integer: 4 -> 4 ()
+found integer: 4
+lex read exponentiation operator
+lex read decimal integer: 2 -> 2 ()
+found integer: 2
+found exponentiation expression: 4.000000 ^ 2.000000
+lex read close parenthesis
+found additive expression: 9.000000 + 16.000000
+found parenthesized expression: 25.000000
+lex read exponentiation operator
+lex read open parenthesis
+lex read decimal integer: 1 -> 1 ()
+found integer: 1
+lex read division operator: /
+lex read decimal integer: 2 -> 2 ()
+found integer: 2
+lex read close parenthesis
+found divisive expression: 1.000000 / 2.000000
+found parenthesized expression: 0.500000
+found exponentiation expression: 25.000000 ^ 0.500000
+expression output 5.000000
