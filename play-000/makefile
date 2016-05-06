@@ -1,6 +1,6 @@
 all: test
 
-test: build test.000.out test.001.out
+test: build test.001.out
 
 test.000.out: test.000 eparse
 	./eparse "`cat test.000`" > test.000.out

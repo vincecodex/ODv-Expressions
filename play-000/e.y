@@ -1,4 +1,5 @@
 %{
+  #include <stdlib.h>
   #include <stdio.h>
   #include <math.h>
   #include <string.h>
@@ -9,15 +10,19 @@
   long double lg(long double num);
   FILE *yyin, *yyout;
   struct expression *output;
+  struct expression *boperator(struct binary_operator_type *);
+  struct expression *uoperator(struct unary_operator_type *);
+  struct expression *boperatorc(struct binary_operator_type *,struct expression *,struct expression *);
+  struct expression *uoperatorc(struct unary_operator_type *,struct expression *);
 %}
 
 %union {
   long long iValue;
   long double fValue;
   char *sValue;
-  struct uval uValue;
-  struct bval bValue;
-  struct expression eValue;
+  struct unary_operator_type *uValue;
+  struct binary_operator_type *bValue;
+  struct expression *eValue;
 };
 
 %token <eValue> IDENTIFIER
@@ -49,28 +54,62 @@
 %%
 
 program:
-    expression  { output = $1; printf("expression parsed\n",$1); }
+    expression  { output = $1; printf("expression parsed\n"); }
+    | program NEW_LINES expression  { output = $3; printf("expression parsed\n"); }
     ;
 
 expression:
-    INTEGER_LITERAL  { $$ = $1; printf("found integer: %Ld\n",$1); }
-    | FLOAT_LITERAL  { $$ = $1; printf("found integer: %Lf\n",$1); }
-    | expression OP_PL expression  { $$ = boperatorc(BIN_OP_ADDITION,$1,$3); printf("found additive expression\n"); }
-    | expression OP_MI expression  { $$ = boperatorc(BIN_OP_SUBTRACTION,$1,$3); printf("found subtractive expression\n"); }
-    | expression OP_MU expression  { $$ = boperatorc(BIN_OP_MULTIPLICATION,$1,$3); printf("found multiplicative expression\n"); }
-    | expression OP_DI expression  { $$ = boperatorc(BIN_OP_DIVISION,$1,$3); printf("found divisive expression\n"); }
-    | OP_MI expression  %prec OP_MU  { $$ = uoperatorc(UN_OP_NEGATION,$2); printf("found negative expression\n"); }
-    | expression OP_EX expression  { $$ = boperatorc(BIN_OP_EXPONENTIATION,$1,$3); printf("found exponentiation expression\n"); }
+    INTEGER_LITERAL  { $$ = $1; printf("found integer\n"); }
+    | FLOAT_LITERAL  { $$ = $1; printf("found float\n"); }
+    | expression OP_PL expression  { $$ = boperatorc(&BIN_OP_ADDITION,$1,$3); printf("found additive expression\n"); }
+    | expression OP_MI expression  { $$ = boperatorc(&BIN_OP_SUBTRACTION,$1,$3); printf("found subtractive expression\n"); }
+    | expression OP_MU expression  { $$ = boperatorc(&BIN_OP_MULTIPLICATION,$1,$3); printf("found multiplicative expression\n"); }
+    | expression OP_DI expression  { $$ = boperatorc(&BIN_OP_DIVISION,$1,$3); printf("found divisive expression\n"); }
+    | OP_MI expression  %prec OP_MU  { $$ = uoperatorc(&UN_OP_NEGATION,$2); printf("found negative expression\n"); }
+    | expression OP_EX expression  { $$ = boperatorc(&BIN_OP_EXPONENTIATION,$1,$3); printf("found exponentiation expression\n"); }
     | BR_OP expression BR_CP  { $$ = $2; printf("found parenthesized expression\n"); }
-    | BR_AB expression BR_AB  { $$ = uoperatorc(UN_OP_ABSOLUTE,$2); printf("found abs expression\n"); }
-    | BR_OC expression BR_CC  { $$ = uoperatorc(UN_OP_CEILING,$2); printf("found ceil expression\n"); }
-    | BR_OF expression BR_CF  { $$ = uoperatorc(UN_OP_FLOOR,$2); printf("found floor expression\n"); }
+    | BR_AB expression BR_AB  { $$ = uoperatorc(&UN_OP_ABSOLUTE,$2); printf("found abs expression\n"); }
+    | BR_OC expression BR_CC  { $$ = uoperatorc(&UN_OP_CEILING,$2); printf("found ceil expression\n"); }
+    | BR_OF expression BR_CF  { $$ = uoperatorc(&UN_OP_FLOOR,$2); printf("found floor expression\n"); }
     ;
 
 %%
 
 void yyerror(char *s) {
   fprintf(stderr, "%s\n", s);
+}
+
+struct expression *boperatorc(struct binary_operator_type *b, struct expression *l, struct expression *r) {
+  struct expression *operator;
+  struct binary_operator *o;
+  operator = malloc(sizeof(struct expression));
+  operator->type = EXPRESSION_TYPE_BINARY_OPERATOR;
+  o = malloc(sizeof(struct binary_operator));
+  operator->data = (char *) o;
+  o->type = b;
+  o->left = l;
+  o->right = r;
+  return operator;
+}
+
+struct expression *uoperatorc(struct unary_operator_type *u, struct expression *c) {
+  struct expression *operator;
+  struct unary_operator *o;
+  operator = malloc(sizeof(struct expression));
+  operator->type = EXPRESSION_TYPE_UNARY_OPERATOR;
+  o = malloc(sizeof(struct unary_operator));;
+  operator->data = (char *) o;
+  o->type = u;
+  o->child = c;
+  return operator;
+}
+
+struct expression *boperator(struct binary_operator_type *b) {
+  return boperatorc(b,0,0);
+}
+
+struct expression *uoperator(struct unary_operator_type *u) {
+  return uoperatorc(u,0);
 }
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
@@ -101,7 +140,7 @@ struct expression *parse(char *str) {
     fclose(stream);
     yyparse();
 //*/
-    return 0;
+    return output;
   }
 }
 

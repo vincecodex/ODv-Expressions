@@ -92,14 +92,14 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 14 "e.y" /* yacc.c:1909  */
+#line 19 "e.y" /* yacc.c:1909  */
 
   long long iValue;
   long double fValue;
   char *sValue;
-  struct uval uValue;
-  struct bval bValue;
-  struct expression eValue;
+  struct unary_operator_type *uValue;
+  struct binary_operator_type *bValue;
+  struct expression *eValue;
 
 #line 105 "y.tab.h" /* yacc.c:1909  */
 };

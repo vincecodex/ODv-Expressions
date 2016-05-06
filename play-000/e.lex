@@ -7,13 +7,8 @@
   #include "y.tab.h"
   void yyerror(char *);
   char *endptr;
-  int unary(union YYSTYPE*,int,char *);
-  struct expression iliteral(long long i);
-  struct expression fliteral(long double f);
-  struct expression boperator(struct binary_operator_type *);
-  struct expression uoperator(struct unary_operator_type *);
-  struct expression boperatorc(struct binary_operator_type *,struct expression *,struct expression *);
-  struct expression uoperatorc(struct unary_operator_type *,struct expression *);
+  struct expression *iliteral(long long i);
+  struct expression *fliteral(long double f);
 %}
 
 digit [0-9]
@@ -162,61 +157,26 @@ nonnewlinewhitespace [ \t]
 
 %%
 
-int unary(union YYSTYPE *yylval, int yyleng, char *yytext) {
-  yylval->uValue.nom = malloc(yyleng+1);
-  strcpy(yylval->uValue.nom,yytext);
-  yylval->uValue.ptr = &sinl;
-  printf("lex read sin function name\n");
-  return UNARY_FUNCTION;
-}
-
-struct expression iliteral(long long i) {
+struct expression *iliteral(long long i) {
   struct expression *literal;
   long long *l;
   literal = malloc(sizeof(struct expression));
   literal->type = EXPRESSION_TYPE_LITERAL_LONG_INTEGER;
-  literal->data = l = malloc(sizeof(long long));
+  l = malloc(sizeof(long long));
+  literal->data = (char *) l;
   *l = i;
   return literal;
 }
 
-struct expression fliteral(long double f) {
+struct expression *fliteral(long double f) {
   struct expression *literal;
   long double *l;
   literal = malloc(sizeof(struct expression));
   literal->type = EXPRESSION_TYPE_LITERAL_LONG_DOUBLE;
-  literal->data = l = malloc(sizeof(long double));
+  l = malloc(sizeof(long double));
+  literal->data = (char *) l;
   *l = f;
   return literal;
-}
-
-struct expression boperatorc(struct binary_operator_type *b, struct expression *l, struct expression *r) {
-  struct expression operator;
-  struct binary_operator *o;
-  operator.type = EXPRESSION_TYPE_BINARY_OPERATOR;
-  operator.data = o = malloc(sizeof(struct binary_operator));
-  o->type = b;
-  o->left = l;
-  o->right = r;
-  return operator;
-}
-
-struct expression uoperatorc(struct unary_operator_type *u, struct expression *c) {
-  struct expression operator;
-  struct unary_operator *o;
-  operator.type = EXPRESSION_TYPE_UNARY_OPERATOR;
-  operator.data = o = malloc(sizeof(struct unary_operator));
-  o->type = u;
-  o->child = c;
-  return operator;
-}
-
-struct expression boperator(struct binary_operator_type *b) {
-  return boperatorc(b,0,0);
-}
-
-struct expression uoperator(struct unary_operator_type *u) {
-  return uoperatorc(b,0);
 }
 
 int yywrap(void) {

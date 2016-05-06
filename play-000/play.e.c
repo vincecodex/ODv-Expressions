@@ -1,5 +1,8 @@
 #include "play.e.h"
 
+#include <stdlib.h>
+#include <stdio.h>
+
 long double lg(long double num) {
   return logl( num ) / logl( 2 );
 }
@@ -70,37 +73,41 @@ long double getLF(struct expression *e) {
   return *p;
 }
 
-void print_tree(struct expression *e) {
-  char *t;
-  t = malloc(1);
-  t[0] = 0;
-  print_tree_internal(e,t);
-}
-
-void print_tree(struct expression *e,char *t,int l) {
+void print_tree_internal(struct expression *e,char *t,int l) {
   struct binary_operator *b;
   struct unary_operator *u;
   char *n;
   n = malloc(l+2);
-  sprintf(n,"\t%s",l);
+  sprintf(n,"\t%s",t);
+  if( e == 0 ) {
+    printf("%sNULL\n",t);
+    return;
+  }
   switch(e->type) {
     case EXPRESSION_TYPE_LITERAL_LONG_INTEGER:
-      printf("%s%Ld",t,getLD(e));
+      printf("%s%Ld\n",t,getLD(e));
       break;
     case EXPRESSION_TYPE_LITERAL_LONG_DOUBLE:
-      printf("%s%Lf",t,getLF(e));
+      printf("%s%Lf\n",t,getLF(e));
       break;
     case EXPRESSION_TYPE_BINARY_OPERATOR:
       b = (struct binary_operator *) e->data;
-      print_tree(b->left,n,l+1);
-      printf("%s%s:",t,b->type->name);
-      print_tree(b->right,n,l+1);
+      print_tree_internal(b->left,n,l+1);
+      printf("%s%s:\n",t,b->type->name);
+      print_tree_internal(b->right,n,l+1);
       break;
     case EXPRESSION_TYPE_UNARY_OPERATOR:
       u = (struct unary_operator *) e->data;
-      printf("%s%s:",t,u->type->name);
-      print_tree(u->child,n,l+1);
+      printf("%s%s:\n",t,u->type->name);
+      print_tree_internal(u->child,n,l+1);
       break;
   }
-  free(n);
+  //free(n);
+}
+
+void print_tree(struct expression *e) {
+  char *t;
+  t = malloc(1);
+  t[0] = 0;
+  print_tree_internal(e,t,0);
 }

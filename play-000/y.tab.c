@@ -64,6 +64,7 @@
 /* Copy the first part of user declarations.  */
 #line 1 "e.y" /* yacc.c:339  */
 
+  #include <stdlib.h>
   #include <stdio.h>
   #include <math.h>
   #include <string.h>
@@ -74,8 +75,12 @@
   long double lg(long double num);
   FILE *yyin, *yyout;
   struct expression *output;
+  struct expression *boperator(struct binary_operator_type *);
+  struct expression *uoperator(struct unary_operator_type *);
+  struct expression *boperatorc(struct binary_operator_type *,struct expression *,struct expression *);
+  struct expression *uoperatorc(struct unary_operator_type *,struct expression *);
 
-#line 79 "y.tab.c" /* yacc.c:339  */
+#line 84 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -157,16 +162,16 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 14 "e.y" /* yacc.c:355  */
+#line 19 "e.y" /* yacc.c:355  */
 
   long long iValue;
   long double fValue;
   char *sValue;
-  struct uval uValue;
-  struct bval bValue;
-  struct expression eValue;
+  struct unary_operator_type *uValue;
+  struct binary_operator_type *bValue;
+  struct expression *eValue;
 
-#line 170 "y.tab.c" /* yacc.c:355  */
+#line 175 "y.tab.c" /* yacc.c:355  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
@@ -181,7 +186,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 185 "y.tab.c" /* yacc.c:358  */
+#line 190 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -423,16 +428,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  15
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   60
+#define YYLAST   63
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  22
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  3
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  14
+#define YYNRULES  15
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  30
+#define YYNSTATES  32
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
@@ -480,8 +485,8 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    52,    52,    56,    57,    58,    59,    60,    61,    62,
-      63,    64,    65,    66,    67
+       0,    57,    57,    58,    62,    63,    64,    65,    66,    67,
+      68,    69,    70,    71,    72,    73
 };
 #endif
 
@@ -509,10 +514,10 @@ static const yytype_uint16 yytoknum[] =
 };
 # endif
 
-#define YYPACT_NINF -4
+#define YYPACT_NINF -6
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-4)))
+  (!!((Yystate) == (-6)))
 
 #define YYTABLE_NINF -1
 
@@ -523,9 +528,10 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      14,    -4,    -4,    14,    14,    14,    14,    14,    10,    47,
-       1,    40,    -1,    30,    25,    -4,    14,    14,    14,    14,
-      14,    -4,    -4,    -4,    -4,    50,    50,     1,     1,    -4
+      22,    -6,    -6,    22,    22,    22,    22,    22,     0,     7,
+      -4,    51,    43,    33,    -5,    -6,    22,    22,    22,    22,
+      22,    22,    -6,    -6,    -6,    -6,     7,    36,    36,    -4,
+      -4,    -6
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -533,15 +539,16 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     3,     4,     0,     0,     0,     0,     0,     0,     2,
-       9,     0,     0,     0,     0,     1,     0,     0,     0,     0,
-       0,    11,    12,    13,    14,     5,     6,     7,     8,    10
+       0,     4,     5,     0,     0,     0,     0,     0,     0,     2,
+      10,     0,     0,     0,     0,     1,     0,     0,     0,     0,
+       0,     0,    12,    13,    14,    15,     3,     6,     7,     8,
+       9,    11
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -4,    -4,    -3
+      -6,    -6,     4
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
@@ -555,24 +562,24 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-      10,    11,    12,    13,    14,    16,    17,    18,    19,    20,
-      15,    20,    22,    25,    26,    27,    28,    29,     1,     2,
-       0,     3,     0,     0,     0,     4,     0,     5,     6,     0,
-       7,    16,    17,    18,    19,    20,    16,    17,    18,    19,
-      20,     0,    24,     0,     0,    23,    16,    17,    18,    19,
-      20,     0,    21,    16,    17,    18,    19,    20,    18,    19,
-      20
+      15,    17,    18,    19,    20,    21,    21,    10,    11,    12,
+      13,    14,    25,    17,    18,    19,    20,    21,     0,    16,
+      26,    27,    28,    29,    30,    31,     1,     2,     0,     3,
+       0,     0,     0,     4,     0,     5,     6,     0,     7,    17,
+      18,    19,    20,    21,    19,    20,    21,     0,    24,    17,
+      18,    19,    20,    21,     0,     0,    23,    17,    18,    19,
+      20,    21,     0,    22
 };
 
 static const yytype_int8 yycheck[] =
 {
-       3,     4,     5,     6,     7,     6,     7,     8,     9,    10,
-       0,    10,    13,    16,    17,    18,    19,    20,     4,     5,
-      -1,     7,    -1,    -1,    -1,    11,    -1,    13,    14,    -1,
-      16,     6,     7,     8,     9,    10,     6,     7,     8,     9,
-      10,    -1,    17,    -1,    -1,    15,     6,     7,     8,     9,
-      10,    -1,    12,     6,     7,     8,     9,    10,     8,     9,
-      10
+       0,     6,     7,     8,     9,    10,    10,     3,     4,     5,
+       6,     7,    17,     6,     7,     8,     9,    10,    -1,    19,
+      16,    17,    18,    19,    20,    21,     4,     5,    -1,     7,
+      -1,    -1,    -1,    11,    -1,    13,    14,    -1,    16,     6,
+       7,     8,     9,    10,     8,     9,    10,    -1,    15,     6,
+       7,     8,     9,    10,    -1,    -1,    13,     6,     7,     8,
+       9,    10,    -1,    12
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -580,22 +587,23 @@ static const yytype_int8 yycheck[] =
 static const yytype_uint8 yystos[] =
 {
        0,     4,     5,     7,    11,    13,    14,    16,    23,    24,
-      24,    24,    24,    24,    24,     0,     6,     7,     8,     9,
-      10,    12,    13,    15,    17,    24,    24,    24,    24,    24
+      24,    24,    24,    24,    24,     0,    19,     6,     7,     8,
+       9,    10,    12,    13,    15,    17,    24,    24,    24,    24,
+      24,    24
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    22,    23,    24,    24,    24,    24,    24,    24,    24,
-      24,    24,    24,    24,    24
+       0,    22,    23,    23,    24,    24,    24,    24,    24,    24,
+      24,    24,    24,    24,    24,    24
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     1,     1,     1,     3,     3,     3,     3,     2,
-       3,     3,     3,     3,     3
+       0,     2,     1,     3,     1,     1,     3,     3,     3,     3,
+       2,     3,     3,     3,     3,     3
 };
 
 
@@ -1272,85 +1280,91 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 52 "e.y" /* yacc.c:1646  */
-    { output = (yyvsp[0].eValue); printf("expression parsed\n",(yyvsp[0].eValue)); }
-#line 1278 "y.tab.c" /* yacc.c:1646  */
+#line 57 "e.y" /* yacc.c:1646  */
+    { output = (yyvsp[0].eValue); printf("expression parsed\n"); }
+#line 1286 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 56 "e.y" /* yacc.c:1646  */
-    { (yyval.eValue) = (yyvsp[0].eValue); printf("found integer: %Ld\n",(yyvsp[0].eValue)); }
-#line 1284 "y.tab.c" /* yacc.c:1646  */
+#line 58 "e.y" /* yacc.c:1646  */
+    { output = (yyvsp[0].eValue); printf("expression parsed\n"); }
+#line 1292 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 57 "e.y" /* yacc.c:1646  */
-    { (yyval.eValue) = (yyvsp[0].eValue); printf("found integer: %Lf\n",(yyvsp[0].eValue)); }
-#line 1290 "y.tab.c" /* yacc.c:1646  */
+#line 62 "e.y" /* yacc.c:1646  */
+    { (yyval.eValue) = (yyvsp[0].eValue); printf("found integer\n"); }
+#line 1298 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 58 "e.y" /* yacc.c:1646  */
-    { (yyval.eValue) = boperatorc(BIN_OP_ADDITION,(yyvsp[-2].eValue),(yyvsp[0].eValue)); printf("found additive expression\n"); }
-#line 1296 "y.tab.c" /* yacc.c:1646  */
+#line 63 "e.y" /* yacc.c:1646  */
+    { (yyval.eValue) = (yyvsp[0].eValue); printf("found float\n"); }
+#line 1304 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 59 "e.y" /* yacc.c:1646  */
-    { (yyval.eValue) = boperatorc(BIN_OP_SUBTRACTION,(yyvsp[-2].eValue),(yyvsp[0].eValue)); printf("found subtractive expression\n"); }
-#line 1302 "y.tab.c" /* yacc.c:1646  */
+#line 64 "e.y" /* yacc.c:1646  */
+    { (yyval.eValue) = boperatorc(&BIN_OP_ADDITION,(yyvsp[-2].eValue),(yyvsp[0].eValue)); printf("found additive expression\n"); }
+#line 1310 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 60 "e.y" /* yacc.c:1646  */
-    { (yyval.eValue) = boperatorc(BIN_OP_MULTIPLICATION,(yyvsp[-2].eValue),(yyvsp[0].eValue)); printf("found multiplicative expression\n"); }
-#line 1308 "y.tab.c" /* yacc.c:1646  */
+#line 65 "e.y" /* yacc.c:1646  */
+    { (yyval.eValue) = boperatorc(&BIN_OP_SUBTRACTION,(yyvsp[-2].eValue),(yyvsp[0].eValue)); printf("found subtractive expression\n"); }
+#line 1316 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 61 "e.y" /* yacc.c:1646  */
-    { (yyval.eValue) = boperatorc(BIN_OP_DIVISION,(yyvsp[-2].eValue),(yyvsp[0].eValue)); printf("found divisive expression\n"); }
-#line 1314 "y.tab.c" /* yacc.c:1646  */
+#line 66 "e.y" /* yacc.c:1646  */
+    { (yyval.eValue) = boperatorc(&BIN_OP_MULTIPLICATION,(yyvsp[-2].eValue),(yyvsp[0].eValue)); printf("found multiplicative expression\n"); }
+#line 1322 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 62 "e.y" /* yacc.c:1646  */
-    { (yyval.eValue) = uoperatorc(UN_OP_NEGATION,(yyvsp[0].eValue)); printf("found negative expression\n"); }
-#line 1320 "y.tab.c" /* yacc.c:1646  */
+#line 67 "e.y" /* yacc.c:1646  */
+    { (yyval.eValue) = boperatorc(&BIN_OP_DIVISION,(yyvsp[-2].eValue),(yyvsp[0].eValue)); printf("found divisive expression\n"); }
+#line 1328 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 63 "e.y" /* yacc.c:1646  */
-    { (yyval.eValue) = boperatorc(BIN_OP_EXPONENTIATION,(yyvsp[-2].eValue),(yyvsp[0].eValue)); printf("found exponentiation expression\n"); }
-#line 1326 "y.tab.c" /* yacc.c:1646  */
+#line 68 "e.y" /* yacc.c:1646  */
+    { (yyval.eValue) = uoperatorc(&UN_OP_NEGATION,(yyvsp[0].eValue)); printf("found negative expression\n"); }
+#line 1334 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 64 "e.y" /* yacc.c:1646  */
-    { (yyval.eValue) = (yyvsp[-1].eValue); printf("found parenthesized expression\n"); }
-#line 1332 "y.tab.c" /* yacc.c:1646  */
+#line 69 "e.y" /* yacc.c:1646  */
+    { (yyval.eValue) = boperatorc(&BIN_OP_EXPONENTIATION,(yyvsp[-2].eValue),(yyvsp[0].eValue)); printf("found exponentiation expression\n"); }
+#line 1340 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 65 "e.y" /* yacc.c:1646  */
-    { (yyval.eValue) = uoperatorc(UN_OP_ABSOLUTE,(yyvsp[-1].eValue)); printf("found abs expression\n"); }
-#line 1338 "y.tab.c" /* yacc.c:1646  */
+#line 70 "e.y" /* yacc.c:1646  */
+    { (yyval.eValue) = (yyvsp[-1].eValue); printf("found parenthesized expression\n"); }
+#line 1346 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 66 "e.y" /* yacc.c:1646  */
-    { (yyval.eValue) = uoperatorc(UN_OP_CEILING,(yyvsp[-1].eValue)); printf("found ceil expression\n"); }
-#line 1344 "y.tab.c" /* yacc.c:1646  */
+#line 71 "e.y" /* yacc.c:1646  */
+    { (yyval.eValue) = uoperatorc(&UN_OP_ABSOLUTE,(yyvsp[-1].eValue)); printf("found abs expression\n"); }
+#line 1352 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 67 "e.y" /* yacc.c:1646  */
-    { (yyval.eValue) = uoperatorc(UN_OP_FLOOR,(yyvsp[-1].eValue)); printf("found floor expression\n"); }
-#line 1350 "y.tab.c" /* yacc.c:1646  */
+#line 72 "e.y" /* yacc.c:1646  */
+    { (yyval.eValue) = uoperatorc(&UN_OP_CEILING,(yyvsp[-1].eValue)); printf("found ceil expression\n"); }
+#line 1358 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 15:
+#line 73 "e.y" /* yacc.c:1646  */
+    { (yyval.eValue) = uoperatorc(&UN_OP_FLOOR,(yyvsp[-1].eValue)); printf("found floor expression\n"); }
+#line 1364 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1354 "y.tab.c" /* yacc.c:1646  */
+#line 1368 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1578,11 +1592,44 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 70 "e.y" /* yacc.c:1906  */
+#line 76 "e.y" /* yacc.c:1906  */
 
 
 void yyerror(char *s) {
   fprintf(stderr, "%s\n", s);
+}
+
+struct expression *boperatorc(struct binary_operator_type *b, struct expression *l, struct expression *r) {
+  struct expression *operator;
+  struct binary_operator *o;
+  operator = malloc(sizeof(struct expression));
+  operator->type = EXPRESSION_TYPE_BINARY_OPERATOR;
+  o = malloc(sizeof(struct binary_operator));
+  operator->data = (char *) o;
+  o->type = b;
+  o->left = l;
+  o->right = r;
+  return operator;
+}
+
+struct expression *uoperatorc(struct unary_operator_type *u, struct expression *c) {
+  struct expression *operator;
+  struct unary_operator *o;
+  operator = malloc(sizeof(struct expression));
+  operator->type = EXPRESSION_TYPE_UNARY_OPERATOR;
+  o = malloc(sizeof(struct unary_operator));;
+  operator->data = (char *) o;
+  o->type = u;
+  o->child = c;
+  return operator;
+}
+
+struct expression *boperator(struct binary_operator_type *b) {
+  return boperatorc(b,0,0);
+}
+
+struct expression *uoperator(struct unary_operator_type *u) {
+  return uoperatorc(u,0);
 }
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
@@ -1613,7 +1660,7 @@ struct expression *parse(char *str) {
     fclose(stream);
     yyparse();
 //*/
-    return 0;
+    return output;
   }
 }
 

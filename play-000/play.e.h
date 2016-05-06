@@ -100,6 +100,10 @@ extern struct unary_operator_type UN_OP_CEILING;
 
 extern struct unary_operator_type UN_OP_FLOOR;
 
+long long getLD(struct expression *e);
+
+long double getLF(struct expression *e);
+
 void print_tree(struct expression *);
 
 #endif

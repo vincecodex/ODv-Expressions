@@ -493,14 +493,9 @@ char *yytext;
   #include "y.tab.h"
   void yyerror(char *);
   char *endptr;
-  int unary(union YYSTYPE*,int,char *);
-  struct expression iliteral(long long i);
-  struct expression fliteral(long double f);
-  struct expression boperator(struct binary_operator_type *);
-  struct expression uoperator(struct unary_operator_type *);
-  struct expression boperatorc(struct binary_operator_type *,struct expression *,struct expression *);
-  struct expression uoperatorc(struct unary_operator_type *,struct expression *);
-#line 504 "lex.yy.c"
+  struct expression *iliteral(long long i);
+  struct expression *fliteral(long double f);
+#line 499 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -714,10 +709,10 @@ YY_DECL
 		}
 
 	{
-#line 29 "e.lex"
+#line 24 "e.lex"
 
 
-#line 721 "lex.yy.c"
+#line 716 "lex.yy.c"
 
 	while ( 1 )		/* loops until end-of-file is reached */
 		{
@@ -776,7 +771,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 31 "e.lex"
+#line 26 "e.lex"
 {
       printf("lex skipped whitespace\n");
     }
@@ -784,7 +779,7 @@ YY_RULE_SETUP
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 34 "e.lex"
+#line 29 "e.lex"
 {
       yylval.sValue = malloc(yyleng+1);
       strcpy(yylval.sValue,yytext);
@@ -794,7 +789,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 40 "e.lex"
+#line 35 "e.lex"
 {
       yylval.eValue = iliteral(0);
       printf("lex read 0\n");
@@ -803,7 +798,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 45 "e.lex"
+#line 40 "e.lex"
 {
       yylval.eValue = iliteral(strtol(yytext+2,&endptr,2));
       printf("lex read binary integer: %s -> %Ld (%s)\n",yytext,yylval.iValue,endptr);
@@ -812,7 +807,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 50 "e.lex"
+#line 45 "e.lex"
 {
       yylval.eValue = iliteral(strtol(yytext+1,&endptr,8));
       printf("lex read octal integer: %s -> %Ld (%s)\n",yytext,yylval.iValue,endptr);
@@ -821,7 +816,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 55 "e.lex"
+#line 50 "e.lex"
 {
       yylval.eValue = iliteral(strtol(yytext,&endptr,10));
       printf("lex read decimal integer: %s -> %Ld (%s)\n",yytext,yylval.iValue,endptr);
@@ -830,7 +825,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 60 "e.lex"
+#line 55 "e.lex"
 {
       yylval.eValue = iliteral(strtol(yytext+2,&endptr,16));
       printf("lex read hexidecimal integer: %s -> %Ld (%s)\n",yytext,yylval.iValue,endptr);
@@ -839,7 +834,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 65 "e.lex"
+#line 60 "e.lex"
 {
       yylval.eValue = iliteral(strtod(yytext,&endptr));
       printf("lex read fraction: %s -> %Lf (%s)\n",yytext,yylval.fValue,endptr);
@@ -848,7 +843,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 70 "e.lex"
+#line 65 "e.lex"
 {
       yylval.eValue = iliteral(strtod(yytext,&endptr));
       printf("lex read float: %s -> %Lf (%s)\n",yytext,yylval.fValue,endptr);
@@ -857,7 +852,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 75 "e.lex"
+#line 70 "e.lex"
 {
       yylval.sValue = malloc(yyleng+1);
       strcpy(yylval.sValue,yytext);
@@ -867,7 +862,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 81 "e.lex"
+#line 76 "e.lex"
 {
       yylval.sValue = malloc(yyleng+1);
       strcpy(yylval.sValue,yytext);
@@ -877,7 +872,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 87 "e.lex"
+#line 82 "e.lex"
 {
       yylval.sValue = malloc(yyleng+1);
       strcpy(yylval.sValue,yytext);
@@ -887,7 +882,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 93 "e.lex"
+#line 88 "e.lex"
 {
       yylval.sValue = malloc(yyleng+1);
       strcpy(yylval.sValue,yytext);
@@ -897,7 +892,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 99 "e.lex"
+#line 94 "e.lex"
 {
       yylval.sValue = malloc(yyleng+1);
       strcpy(yylval.sValue,yytext);
@@ -907,7 +902,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 105 "e.lex"
+#line 100 "e.lex"
 {
       yylval.sValue = malloc(yyleng+1);
       strcpy(yylval.sValue,yytext);
@@ -917,7 +912,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 111 "e.lex"
+#line 106 "e.lex"
 {
       yylval.sValue = malloc(yyleng+1);
       strcpy(yylval.sValue,yytext);
@@ -927,7 +922,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 117 "e.lex"
+#line 112 "e.lex"
 {
       yylval.sValue = malloc(yyleng+1);
       strcpy(yylval.sValue,yytext);
@@ -937,7 +932,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 123 "e.lex"
+#line 118 "e.lex"
 {
       yylval.sValue = malloc(yyleng+1);
       strcpy(yylval.sValue,yytext);
@@ -947,7 +942,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 129 "e.lex"
+#line 124 "e.lex"
 {
       yylval.sValue = malloc(yyleng+1);
       strcpy(yylval.sValue,yytext);
@@ -957,7 +952,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 135 "e.lex"
+#line 130 "e.lex"
 {
       yylval.sValue = malloc(yyleng+1);
       strcpy(yylval.sValue,yytext);
@@ -967,7 +962,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 141 "e.lex"
+#line 136 "e.lex"
 {
       yylval.sValue = malloc(yyleng+1);
       strcpy(yylval.sValue,yytext);
@@ -977,7 +972,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 147 "e.lex"
+#line 142 "e.lex"
 {
       yylval.sValue = malloc(yyleng+1);
       strcpy(yylval.sValue,yytext);
@@ -987,7 +982,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 153 "e.lex"
+#line 148 "e.lex"
 {
       yylval.sValue = malloc(yyleng+1);
       strcpy(yylval.sValue,yytext);
@@ -997,17 +992,17 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 159 "e.lex"
+#line 154 "e.lex"
 {
       yyerror("unrecognized character\n");
     }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 163 "e.lex"
+#line 158 "e.lex"
 ECHO;
 	YY_BREAK
-#line 1011 "lex.yy.c"
+#line 1006 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2002,65 +1997,30 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 162 "e.lex"
+#line 157 "e.lex"
 
 
 
-int unary(union YYSTYPE *yylval, int yyleng, char *yytext) {
-  yylval->uValue.nom = malloc(yyleng+1);
-  strcpy(yylval->uValue.nom,yytext);
-  yylval->uValue.ptr = &sinl;
-  printf("lex read sin function name\n");
-  return UNARY_FUNCTION;
-}
-
-struct expression iliteral(long long i) {
+struct expression *iliteral(long long i) {
   struct expression *literal;
   long long *l;
   literal = malloc(sizeof(struct expression));
   literal->type = EXPRESSION_TYPE_LITERAL_LONG_INTEGER;
-  literal->data = l = malloc(sizeof(long long));
+  l = malloc(sizeof(long long));
+  literal->data = (char *) l;
   *l = i;
   return literal;
 }
 
-struct expression fliteral(long double f) {
+struct expression *fliteral(long double f) {
   struct expression *literal;
   long double *l;
   literal = malloc(sizeof(struct expression));
   literal->type = EXPRESSION_TYPE_LITERAL_LONG_DOUBLE;
-  literal->data = l = malloc(sizeof(long double));
+  l = malloc(sizeof(long double));
+  literal->data = (char *) l;
   *l = f;
   return literal;
-}
-
-struct expression boperatorc(struct binary_operator_type *b, struct expression *l, struct expression *r) {
-  struct expression operator;
-  struct binary_operator *o;
-  operator.type = EXPRESSION_TYPE_BINARY_OPERATOR;
-  operator.data = o = malloc(sizeof(struct binary_operator));
-  o->type = b;
-  o->left = l;
-  o->right = r;
-  return operator;
-}
-
-struct expression uoperatorc(struct unary_operator_type *u, struct expression *c) {
-  struct expression operator;
-  struct unary_operator *o;
-  operator.type = EXPRESSION_TYPE_UNARY_OPERATOR;
-  operator.data = o = malloc(sizeof(struct unary_operator));
-  o->type = u;
-  o->child = c;
-  return operator;
-}
-
-struct expression boperator(struct binary_operator_type *b) {
-  return boperatorc(b,0,0);
-}
-
-struct expression uoperator(struct unary_operator_type *u) {
-  return uoperatorc(b,0);
 }
 
 int yywrap(void) {
